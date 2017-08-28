@@ -1,0 +1,29 @@
+{
+  "name": "agraciakuvut/kuvuttagging",
+  "type": "library",
+  "description": "PHP Wrapper for the KuvutTagging API",
+  "homepage": "https://github.com/agraciakuvut/KuvutTagging",
+  "keywords": [
+    "kuvut tagging",
+    "tagging"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andrés Gracia",
+      "email": "agracia@kuvut.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "agraciakuvut\\": "src/KuvutTagging"
+    }
+  },
+  "require": {
+    "php": ">=7.0.0",
+    "league/oauth2-client": "^2.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
+}
