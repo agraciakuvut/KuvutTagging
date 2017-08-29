@@ -20,7 +20,16 @@ class KuvutTagging extends AbstractProvider
      */
     const BASE_KUVUT_TAGGING_URL = 'https://tagging.kuvut.com/api/1.0';
 
+    protected $platform;
     protected $accessToken;
+
+    public function __construct(array $options = [], array $collaborators = [])
+    {
+        parent::__construct($options, $collaborators);
+        if (!empty($options['platform'])) {
+            $this->platform = $options['platform'];
+        }
+    }
 
     public function getAccessToken($grant = 'client_credentials', array $params = [])
     {
@@ -68,199 +77,204 @@ class KuvutTagging extends AbstractProvider
         return null;
     }
 
-    protected function getBaseOptions(){
+    protected function getBaseOptions()
+    {
         return ['headers' => ['Authorization' => 'Bearer ' . $this->getAccessToken()->getToken()]];
     }
 
-    protected function parseUrl(string $endpoint, string $platform, array $parameters = []){
+    protected function parseUrl(string $endpoint, array $parameters = [])
+    {
+        $platform = empty($parameters['platform']) ? $this->platform : $parameters['platform'];
+
         $url = static::BASE_KUVUT_TAGGING_URL . $endpoint . '?platform=' . $platform;
-        foreach ($parameters as $parameter => $value){
+        foreach ($parameters as $parameter => $value) {
             $url .= '&' . $parameter . '=' . urlencode($value);
         }
         return $url;
     }
 
-    protected function getResponseBaseOptions($method, $url){
+    protected function getResponseBaseOptions($method, $url)
+    {
         $options = $this->getBaseOptions();
         $request = $this->getRequest($method, $url, $options);
         $response = $this->getParsedResponse($request);
         return $response;
     }
 
-    public function getAllActions(string $platform)
+    public function getAllActions(array $options = [])
     {
         $method = 'GET';
-        $url = $this->parseUrl('/action/list/', $platform);
+        $url = $this->parseUrl('/action/list/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function addAction(string $platform, array $options = [])
+    public function addAction(array $options = [])
     {
         $method = 'PUT';
 
-        if(empty($options['name'])){
-           throw new \Exception('Name missing');
+        if (empty($options['name'])) {
+            throw new \Exception('Name missing');
         }
-        if(empty($options['description'])){
+        if (empty($options['description'])) {
             throw new \Exception('Description missing');
         }
 
-        $url = $this->parseUrl('/action/add/', $platform, $options);
+        $url = $this->parseUrl('/action/add/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function editAction(string $platform, array $options = [])
+    public function editAction(array $options = [])
     {
         $method = 'POST';
-        if(empty($options['action'])){
+        if (empty($options['action'])) {
             throw new \Exception('Action missing');
         }
-        $url = $this->parseUrl('/action/edit/', $platform, $options);
+        $url = $this->parseUrl('/action/edit/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function deleteAction(string $platform, array $options = [])
+    public function deleteAction(array $options = [])
     {
         $method = 'DELETE';
-        if(empty($options['action'])){
+        if (empty($options['action'])) {
             throw new \Exception('Action missing');
         }
-        $url = $this->parseUrl('/action/delete/', $platform, $options);
+        $url = $this->parseUrl('/action/delete/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function assignAction(string $platform, array $options = [])
+    public function assignAction(array $options = [])
     {
         $method = 'PUT';
-        if(empty($options['action'])){
+        if (empty($options['action'])) {
             throw new \Exception('Action missing');
         }
-        if(empty($options['uid'])){
+        if (empty($options['uid'])) {
             throw new \Exception('uid missing');
         }
-        $url = $this->parseUrl('/action/assign/', $platform, $options);
+        $url = $this->parseUrl('/action/assign/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function getAllTags(string $platform)
+    public function getAllTags(array $options = [])
     {
         $method = 'GET';
-        $url = $this->parseUrl('/tag/list/', $platform);
+        $url = $this->parseUrl('/tag/list/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function addTag(string $platform, array $options = [])
+    public function addTag(array $options = [])
     {
         $method = 'PUT';
 
-        if(empty($options['name'])){
+        if (empty($options['name'])) {
             throw new \Exception('Name missing');
         }
 
-        if(empty($options['description'])){
+        if (empty($options['description'])) {
             throw new \Exception('Description missing');
         }
 
-        $url = $this->parseUrl('/tag/add/', $platform, $options);
+        $url = $this->parseUrl('/tag/add/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function editTag(string $platform, array $options = [])
+    public function editTag(array $options = [])
     {
         $method = 'POST';
-        if(empty($options['tag'])){
+        if (empty($options['tag'])) {
             throw new \Exception('Tag missing');
         }
-        $url = $this->parseUrl('/tag/edit/', $platform, $options);
+        $url = $this->parseUrl('/tag/edit/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function assignTag(string $platform, array $options = [])
+    public function assignTag(array $options = [])
     {
         $method = 'PUT';
-        if(empty($options['action'])){
+        if (empty($options['action'])) {
             throw new \Exception('Action missing');
         }
-        if(empty($options['tag'])){
+        if (empty($options['tag'])) {
             throw new \Exception('Tag missing');
         }
-        $url = $this->parseUrl('/tag/assign/', $platform, $options);
+        $url = $this->parseUrl('/tag/assign/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function getTag(string $platform, array $options = [])
+    public function getTag(array $options = [])
     {
         $method = 'GET';
-        if(empty($options['tag'])){
+        if (empty($options['tag'])) {
             throw new \Exception('Tag missing');
         }
-        $url = $this->parseUrl('/tag/get/', $platform, $options);
+        $url = $this->parseUrl('/tag/get/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function getUserTags(string $platform, array $options = [])
+    public function getUserTags(array $options = [])
     {
         $method = 'GET';
-        if(empty($options['uid'])){
+        if (empty($options['uid'])) {
             throw new \Exception('uid missing');
         }
-        $url = $this->parseUrl('/user/get-tags/', $platform, $options);
+        $url = $this->parseUrl('/user/get-tags/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function getTagUsers(string $platform, array $options = [])
+    public function getTagUsers(array $options = [])
     {
         $method = 'GET';
-        if(empty($options['tag'])){
+        if (empty($options['tag'])) {
             throw new \Exception('Tag missing');
         }
-        $url = $this->parseUrl('/user/get-users/', $platform, $options);
+        $url = $this->parseUrl('/user/get-users/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function getAllCategories(string $platform)
+    public function getAllCategories(array $options = [])
     {
         $method = 'GET';
-        $url = $this->parseUrl('/category/list/', $platform);
+        $url = $this->parseUrl('/category/list/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function addCategory(string $platform, array $options = [])
+    public function addCategory(array $options = [])
     {
         $method = 'PUT';
 
-        if(empty($options['name'])){
+        if (empty($options['name'])) {
             throw new \Exception('Name missing');
         }
 
-        if(empty($options['description'])){
+        if (empty($options['description'])) {
             throw new \Exception('Description missing');
         }
 
-        $url = $this->parseUrl('/category/add/', $platform, $options);
+        $url = $this->parseUrl('/category/add/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function editCategory(string $platform, array $options = [])
+    public function editCategory(array $options = [])
     {
         $method = 'POST';
-        if(empty($options['category'])){
+        if (empty($options['category'])) {
             throw new \Exception('Category missing');
         }
-        $url = $this->parseUrl('/category/edit/', $platform, $options);
+        $url = $this->parseUrl('/category/edit/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
-    public function assignCaegory(string $platform, array $options = [])
+    public function assignCaegory(array $options = [])
     {
         $method = 'PUT';
-        if(empty($options['category'])){
+        if (empty($options['category'])) {
             throw new \Exception('Category missing');
         }
-        if(empty($options['tag'])){
+        if (empty($options['tag'])) {
             throw new \Exception('Tag missing');
         }
-        $url = $this->parseUrl('/category/assign/', $platform, $options);
+        $url = $this->parseUrl('/category/assign/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
