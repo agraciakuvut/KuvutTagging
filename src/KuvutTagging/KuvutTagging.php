@@ -202,6 +202,19 @@ class KuvutTagging extends AbstractProvider
         return $this->getResponseBaseOptions($method, $url);
     }
 
+    public function unassignTag(array $options = [])
+    {
+        $method = 'PUT';
+        if (empty($options['action'])) {
+            throw new \Exception('Action missing');
+        }
+        if (empty($options['tag'])) {
+            throw new \Exception('Tag missing');
+        }
+        $url = $this->parseUrl('/tag/unassign/', $options);
+        return $this->getResponseBaseOptions($method, $url);
+    }
+
     public function getTag(array $options = [])
     {
         $method = 'GET';
