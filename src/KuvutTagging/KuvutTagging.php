@@ -88,14 +88,23 @@ class KuvutTagging extends AbstractProvider
 
         $url = static::BASE_KUVUT_TAGGING_URL . $endpoint . '?platform=' . $platform;
         foreach ($parameters as $parameter => $value) {
-            $url .= '&' . $parameter . '=' . urlencode($value);
+            if(!is_array($value)){
+                $url .= '&' . $parameter . '=' . urlencode($value);
+            }
         }
         return $url;
     }
 
-    protected function getResponseBaseOptions($method, $url)
+    protected function getResponseBaseOptions($method, $url, $data = [])
     {
         $options = $this->getBaseOptions();
+        $json = [];
+        foreach ($data as $d){
+            if(is_array($d)){
+                $json = $json + $d;
+            }
+        }
+        $options['body'] = json_encode($json);
         $request = $this->getRequest($method, $url, $options);
         $response = $this->getParsedResponse($request);
         return $response;
@@ -153,7 +162,7 @@ class KuvutTagging extends AbstractProvider
             throw new \Exception('uid missing');
         }
         $url = $this->parseUrl('/action/assign/', $options);
-        return $this->getResponseBaseOptions($method, $url);
+        return $this->getResponseBaseOptions($method, $url, $options);
     }
 
     public function getAllTags(array $options = [])
@@ -186,6 +195,16 @@ class KuvutTagging extends AbstractProvider
             throw new \Exception('Tag missing');
         }
         $url = $this->parseUrl('/tag/edit/', $options);
+        return $this->getResponseBaseOptions($method, $url);
+    }
+
+    public function deleteTag(array $options = [])
+    {
+        $method = 'DELETE';
+        if (empty($options['tag'])) {
+            throw new \Exception('Tag missing');
+        }
+        $url = $this->parseUrl('/tag/delete/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
@@ -288,6 +307,16 @@ class KuvutTagging extends AbstractProvider
             throw new \Exception('Tag missing');
         }
         $url = $this->parseUrl('/category/assign/', $options);
+        return $this->getResponseBaseOptions($method, $url);
+    }
+
+    public function getTagCategory(array $options = [])
+    {
+        $method = 'GET';
+        if (empty($options['category'])) {
+            throw new \Exception('Category missing');
+        }
+        $url = $this->parseUrl('/category/get/', $options);
         return $this->getResponseBaseOptions($method, $url);
     }
 
