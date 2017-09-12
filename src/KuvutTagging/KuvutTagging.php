@@ -99,9 +99,9 @@ class KuvutTagging extends AbstractProvider
     {
         $options = $this->getBaseOptions();
         $json = [];
-        foreach ($data as $d){
+        foreach ($data as $k => $d){
             if(is_array($d)){
-                $json = $json + $d;
+                $json[$k] = $d;
             }
         }
         $options['body'] = json_encode($json);
