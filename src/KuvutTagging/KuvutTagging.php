@@ -330,5 +330,12 @@ class KuvutTagging extends AbstractProvider
         return $this->getResponseBaseOptions($method, $url);
     }
 
+    public function getStatsTagsCategories(array $options = [])
+    {
+        $method = 'GET';
+        $url = $this->parseUrl('/category/stats/', $options);
+        return $this->getResponseBaseOptions($method, $url);
+    }
+
 
 }
