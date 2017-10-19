@@ -264,6 +264,16 @@ class KuvutTagging extends AbstractProvider
         return $this->getResponseBaseOptions($method, $url);
     }
 
+    public function getTagCategoryUsers(array $options = [])
+    {
+        $method = 'GET';
+        if (empty($options['category'])) {
+            throw new \Exception('Category missing');
+        }
+        $url = $this->parseUrl('/user/get-users-category/', $options);
+        return $this->getResponseBaseOptions($method, $url);
+    }
+
     public function getAllCategories(array $options = [])
     {
         $method = 'GET';
